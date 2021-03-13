@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useReducer } from "react";
+import "@tone-row/slang/build/index.css";
+import { Type } from "./RuntimeSlang";
+import { getThemeCss, SlangConfig } from "@tone-row/slang";
 
 function App() {
+  const [config, updateConfig] = useReducer(
+    (c: Partial<SlangConfig>, u: Partial<SlangConfig>) => ({ ...c, ...u }),
+    {}
+  );
+  useEffect(() => {
+    (async () => {
+      let style = document.getElementById("slang");
+      if (!style) {
+        style = document.createElement("style");
+        style.setAttribute("id", "slang");
+        document.head.appendChild(style);
+      }
+      const css = getThemeCss(config);
+      style.innerHTML = css;
+    })();
+  }, [config]);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input
+        type="text"
+        onChange={(e) => updateConfig({ baseFontFamily: e.target.value })}
+      />
+      <Type>Hello World</Type>
     </div>
   );
 }
